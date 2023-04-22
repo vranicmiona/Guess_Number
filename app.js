@@ -1,61 +1,87 @@
+// Global variable
 let number = Math.trunc(Math.random() * 20) + 1;
 let score = 20;
 let highscore = 0;
-console.log(number);
+let attemptsLeft = 10;
+// Web page element access
+let buttonCheck = document.getElementById("btn-check");
 let container = document.querySelector(".container");
-container.addEventListener("change", runEvent);
-function runEvent(e) {
-  document.body.style.backgroundColor =
-    "rgb(" + e.offsetX + "," + e.offsetY + ",40";
-}
-let buttonCheck = document.getElementById("btn");
-// console.log(buttonCheck);
+let prikazPokusaja = document.getElementById("attempts-left");
+let uneseniBroj = document.querySelector(".input");
+let poruka = document.querySelector(".message");
+let poruka2 = document.querySelector(".message2");
+let skriveniBroj = document.querySelector(".secret-number");
+let body = document.querySelector("body");
+let hightScoreEl = document.querySelector(".current-high-score");
+let currentScoreEl = document.querySelector(".current-score");
+let novaIgra = document.querySelector(".btn-new-game");
 
-const prikazPoruke = function (poruka) {
-  document.querySelector(".message").textContent = poruka;
-};
-
+// ADD EVENT LISTENER ON CHECK BUTTON
 buttonCheck.addEventListener("click", vrednost);
 function vrednost() {
-  let uneseniBroj = document.getElementsByClassName("input");
-  uneseniBroj = Number(uneseniBroj.value);
-  console.log(uneseniBroj);
-  if (uneseniBroj === "") {
+  if (attemptsLeft > 10) {
+    attemptsLeft--;
     prikazPoruke("You have not enetered a number&#x2755");
-  } else if (uneseniBroj === number) {
-    displayMessage("Number is correct&#x1F3C6");
-    let body = document.getElementById(".container")[0];
-    body.style.backgroundColor = "white";
-    if (score > highscore) {
-      highscore = score;
-      document.querySelector(".highscore").textContent = highscore;
+    // GET THE NUMBER ENTERNED BY USER
+    let guess = Number(uneseniBroj.value);
+
+    // NO INPUT
+    if (guess === 0) {
+      poruka.textContent = "No number or 0 is entered!";
+      poruka2.textContent = "Try again!";
     }
-  } else if (uneseniBroj !== number) {
-    if (score > 1) {
-      if (uneseniBroj > number) {
-        displayMessage("Too high!");
-      } else displayMessage("Too low!");
-      score--;
-      document.querySelector(".score").textContent = score;
+
+    // GUESSED THE CORRECT NUMBER
+    else if (guess === number) {
+      // DISPLAY THE SECRET NUMBER
+      poruka.textContent = "YOU WON THE GAME!";
+      poruka2.textContent = "CONGRADULATIONS";
+
+      // DISPLAY THE GUESS NUMBER
+      skriveniBroj.textContent = number;
+
+      // CHANGE THE BACKGROUND
+      body.style.backgroundImage = url(
+        "https://cf.ltkcdn.net/garden/images/orig/282403-2121x1414-violet-flower-shades.jpg"
+      );
+
+      // SET HIGH SCORE TO THE CURRENT SCORE
+
+      highscore = score > highscore ? score : highscore;
+      hightScoreEl.textContent = highscore;
+    } else if (guess !== number) {
+      if (score > 0) {
+        body.style.backgroundColor = "red";
+        setTimeout(() => {
+          body.style.backgroundColor = "white";
+        }, 300);
+        let porukaa =
+          guess > number ? "You guessed too high!" : "You guessed too low!";
+        poruka.textContent = porukaa;
+        score--;
+        currentScoreEl.textContent = score;
+      } else {
+        poruka.textContent = "You LOST THE GAME";
+        currentScoreEl.textContent = 0;
+        body.style.backgroundColor = "red";
+      }
     }
   } else {
-    displayMessage("You lost the game");
-    document.querySelector(".score").textContent = 0;
+    //LOST THE GAME
+    poruka.textContent = "You LOST THE GAME";
+    attemptsLeft.textContent = 0;
+    body.style.backgroundColor = "red";
   }
 }
 
-let again = document.querySelector(".btn-again");
-again.addEventListener("click", ispocetka);
-function ispocetka() {
+novaIgra.addEventListener("click", function () {
+  number = Math.trunc(Math.rendom() * 20) + 1;
   score = 20;
-  displayMessage("Start game again...");
-  number = Math.trunc(Math.random() * 20) + 1;
-  document.querySelector(".score").textContent = score;
-}
-
-function preventRefreshOnSubmit() {
-  const form = document.querySelector("form");
-  form.addEventListener("submit", function (event) {
-    event.preventDefault();
-  });
-}
+  attemptsLeft = 10;
+  poruka.textContent = "Number between 1-20";
+  currentScoreEl.textContent = score;
+  prikazPokusaja.textContent = attemptsLeft;
+  skriveniBroj.textContent = "?";
+  uneseniBroj.value = "";
+  body.style.backgroundColor = "white";
+});
